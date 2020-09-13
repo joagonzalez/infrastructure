@@ -14,15 +14,14 @@ provider "azurerm" {
 
 # Create a resource group
 resource "azurerm_resource_group" "rg" {
-  count = var.numbercount
-  name     = "${var.prefix}-TFRG-${count.index}"
+  name     = "${var.prefix}-terraform-rg"
   location = var.location
   tags     = var.tags
 }
 
 # Create virtual network
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-TFVnet-${count.index}"
+  name                = "${var.prefix}-terraform-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -31,7 +30,7 @@ resource "azurerm_virtual_network" "vnet" {
 
 # Create subnet
 resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}-TFSubnet"
+  name                 = "${var.prefix}-terraform-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes       = ["10.0.1.0/24"]
@@ -40,7 +39,7 @@ resource "azurerm_subnet" "subnet" {
 # Create public IP
 resource "azurerm_public_ip" "publicip" {
   count               = var.numbercount
-  name                = "${var.prefix}-TFPublicIP-${count.index}"
+  name                = "${var.prefix}-terraform-publicip-${count.index}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
@@ -49,7 +48,7 @@ resource "azurerm_public_ip" "publicip" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.prefix}-TFNSG"
+  name                = "${var.prefix}-terraform-netsecgroup"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   tags                = var.tags
@@ -70,13 +69,13 @@ resource "azurerm_network_security_group" "nsg" {
 # Create network interface
 resource "azurerm_network_interface" "nic" {
   count               = var.numbercount
-  name                = "${var.prefix}NIC-${count.index}"
+  name                = "${var.prefix}-nic-${count.index}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   tags                = var.tags
 
   ip_configuration {
-    name                          = "${var.prefix}-NICConfg-${count.index}"
+    name                          = "${var.prefix}-nic-config-${count.index}"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "dynamic"
     public_ip_address_id          = element(azurerm_public_ip.publicip.*.id, count.index)
@@ -85,8 +84,8 @@ resource "azurerm_network_interface" "nic" {
 
 # Create a Linux virtual machine
 resource "azurerm_virtual_machine" "vm" {
-  count                 = var.numbercount
   name                  = "${var.prefix}-terraform-${count.index}"
+  count                 = var.numbercount
   location              = var.location
   resource_group_name   = azurerm_resource_group.rg.name
   network_interface_ids = [element(azurerm_network_interface.nic.*.id, count.index)] 
@@ -98,7 +97,7 @@ resource "azurerm_virtual_machine" "vm" {
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
-    disk_size_gb      = "30"
+    #disk_size_gb      = "30"
   }
 
   storage_image_reference {
@@ -109,6 +108,7 @@ resource "azurerm_virtual_machine" "vm" {
   }
 
   os_profile {
+    computer_name  = "${var.prefix}-terraform-${count.index}"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
@@ -120,8 +120,9 @@ resource "azurerm_virtual_machine" "vm" {
 }
 
 data "azurerm_public_ip" "ip" {
-  name                = azurerm_public_ip.publicip.name
-  resource_group_name = azurerm_virtual_machine.vm.resource_group_name
+  count               = var.numbercount
+  name                = azurerm_public_ip.publicip[count.index].name
+  resource_group_name = azurerm_virtual_machine.vm[count.index].resource_group_name
   depends_on          = [azurerm_virtual_machine.vm]
 }
 
@@ -130,5 +131,5 @@ output "os_sku" {
 }
 
 output "public_ip_address" {
-  value = data.azurerm_public_ip.ip.ip_address
+  value = data.azurerm_public_ip.ip.*.ip_address
 }
