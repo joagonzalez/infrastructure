@@ -61,7 +61,7 @@ terraform destroy -var "admin_password=Argentina_2020#" -var "admin_username=new
 ```
 
 ### azure-multiple-vm
-Deploy N vms in azure setting parameterz like number of instances to deploy, network, subnet, etc.
+Deploy N vms in azure setting parameters like number of instances to deploy, network, subnet, etc.
 
 ## Docker
 Dockerfile and docker-compose files for multiples services
