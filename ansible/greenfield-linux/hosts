@@ -1,0 +1,19 @@
+192.168.10.36 newcos-harbor-01
+192.168.10.36 newcos-harbor-01
+
+192.168.10.32 newcos-manager-01 
+192.168.10.41 newcos-manager-02
+
+192.168.10.33 newcos-worker-01
+192.168.10.34 newcos-worker-02
+192.168.10.42 newcos-worker-03
+192.168.10.43 newcos-worker-04
+
+192.168.10.44 newcos-sandbox-01
+192.168.10.46 newcos-sandbox-02
+192.168.10.38 newcos-sandbox-03
+192.168.10.39 newcos-sandbox-04
+
+192.168.10.35 newcos-nfs-01 
+
+192.168.10.41 newcos-gns3-01

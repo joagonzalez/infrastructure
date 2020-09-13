@@ -1,0 +1,30 @@
+---
+- name: RUN COMMAND AND PRINT TO TERMINAL WINDOW
+  hosts: cisco  
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+  - debug:
+      msg: "print user: {{ansible_ssh_user}} print pass: {{ansible_ssh_pass}}"
+
+  - name: send configuration commands to Cisco devices
+    telnet:
+      #user: "{{ansible_ssh_user}}"
+      password: "{{ansible_password}}"
+      login_prompt: "Password: "
+      prompts:
+        - "[>#]"
+      command:
+        - terminal length 0
+        #- ena
+        - sh ip int br
+        - show version
+        #- show running-config
+    register: output
+    when: ansible_network_os == 'ios'
+
+  - debug:
+      msg: "{{output}}"
+    when: output is defined

@@ -1,0 +1,9 @@
+- show voip calls active sbc
+- show voip calls history sbc (dashboard CDR)
+- show voip proxy sets status
+- show system cpu-util
+- show system feature-key
+- show system uptime
+- show system version
+- show system alarms
+- show system log -h

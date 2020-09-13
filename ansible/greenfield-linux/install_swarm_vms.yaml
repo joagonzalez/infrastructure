@@ -1,0 +1,54 @@
+---
+  - hosts: sandbox # nfs, managers, workers
+    tasks:
+
+      - name: Install nfs client requirements
+        apt:
+          name: nfs-common
+          state: present
+        become: yes
+
+      # - name: Install nfs client requirements
+      #   apt:
+      #     name: nfs-kernel-server
+      #     state: present
+      #   become: yes
+      #   when: "'newcos-nfs-01' in ansible_hostname"
+
+      - name: set path variable
+        set_fact: 
+          path: /code
+        delegate_to: localhost
+
+      - name: create /code folder on remote hosts
+        file:
+          path: "{{path}}"
+          state: directory
+          owner: newcos
+          group: newcos
+          recurse: yes
+          mode: 0775
+        become: yes
+
+      - name: copy docker installer script to remote hosts
+        copy:
+          src: ../../scripts/install_docker.sh
+          dest: "{{path}}"
+          owner: newcos
+          group: newcos
+          mode: '0774'
+        become: yes
+
+      - name: Run a command install docker on remote host
+        shell: "sh {{path}}/install_docker.sh"
+        args:
+          executable: /bin/bash
+        register: docker_log
+        become: yes
+
+      - name: docker group to newcos user
+        shell: "usermod -aG docker {{ansible_user}}"
+        become: yes
+
+      - debug:
+          msg: "{{docker_log}}"

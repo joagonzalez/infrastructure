@@ -1,0 +1,17 @@
+  - name: --- Write points into database
+    influxdb_write:
+      hostname: "{{influxdb_ip}}"
+      database_name: "{{influxdb_database_name}}"
+      data_points:
+        - measurement: "{{influxdb_measurement}}"
+          tags:
+            host: "{{ansible_host}}"
+          #time: "{{ ansible_date_time.iso8601 }}"
+          fields:
+            ACTIVE_CALLS: "{{influx_data[0].PACKET_TX}}"
+            ALARMS: "{{influx_data[0].PACKET_RX}}"
+            PROXY_SET: "{{influx_data[0].PACKET_LOSS}}"
+            UPTIME: "{{influx_data[0].RTT_MIN}}"
+            CPU_USAGE: "{{influx_data[0].RTT_AVG}}"
+            SBC_INFO: "{{influx_data[0].RTT_MAX}}"
+    delegate_to: localhost  

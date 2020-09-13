@@ -1,0 +1,77 @@
+---
+- name: RUN COMMAND AND PRINT TO TERMINAL WINDOW
+  hosts: sbc
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    # date info for backup file 
+    - name: Get timestamp from the system
+      shell: "date +%Y-%m-%d"
+      register: tstamp
+      delegate_to: localhost
+
+    - name: Telnet a SBCs
+      telnet:
+        timeout: 20
+        user: "username\r"
+        password: "password\r"
+        login_prompt: "Username: "
+        password_prompt: "Password: "
+        prompts:
+          - "M800B>|M800B#|Mediant VE SBC# "
+        command:
+          - "show activity-log\r "
+          - "show system version | grep Board\r\n"
+          - "show system cpu-util\r "
+          - "show system uptime\r "
+          - "show running-config\r "
+          - "show voip proxy sets status\r"
+          - "show system alarms\r"
+          - "show voip calls active sbc\r"
+          #- "show voip channel-stats jitter-threshold 0\r"
+      register: audiocodesOutput
+
+    - name: --- debugging information of commands executed at SBCs via telnet
+      import_tasks: tasks/debug.yaml
+
+    - name: --- parse results with textFSM
+      import_tasks: tasks/parse.yaml
+  
+    - name: --- show parsed results
+      import_tasks: tasks/results.yaml
+
+    - name: Create a directory if it does not exist
+      file:
+        path: "{{local_git_repo_path}}"
+        state: directory
+        mode: '0755'
+
+    - name: copy configuration extracted from device to localhost
+      copy:
+        content: "{{backup}}"
+        dest: "{{local_git_repo_path}}/backup_{{ansible_host}}_{{tstamp['stdout_lines'][0]}}.conf"
+        owner: jgonzalez  
+        group: jgonzalez
+        mode: '0774'
+      delegate_to: localhost
+
+
+    - name: --- commit changes to git
+      shell: |
+        git add .
+        git commit -m "Config snapshot taken $(date +"%Y-%m-%d %H:%M:%S")"
+        # Needed as git commit will fail if there are no changed files
+        exit 0
+        git push origin HEAD
+      args:
+        chdir: "{{ local_git_repo_path }}"
+      run_once: true
+
+    - name: --- push changes to git
+      shell: |
+        git push origin HEAD
+      args:
+        chdir: "{{ local_git_repo_path }}"
+      run_once: true

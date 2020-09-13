@@ -1,0 +1,36 @@
+    # debug    
+    - name: --- debug activity-logs ---
+      debug:
+        msg: "{{audiocodesOutput.output[0]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug system version ---
+      debug:
+        msg: "{{audiocodesOutput.output[1]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug cpu-util ---
+      debug:
+        msg: "{{audiocodesOutput.output[2]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug uptime ---
+      debug:
+        msg: "{{audiocodesOutput.output[3]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug proxy_set status ---
+      debug:
+        msg: "{{audiocodesOutput.output[5]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug sbc alarms ---
+      debug:
+        msg: "{{audiocodesOutput.output[6]}}"
+      when: audiocodesOutput is defined
+  
+    - name: --- debug sbc active-calls ---
+      debug:
+        msg: "{{audiocodesOutput.output[7]}}"
+      when: audiocodesOutput is defined
+    
