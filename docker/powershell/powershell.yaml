@@ -1,0 +1,23 @@
+version: '3.2'
+
+services:
+  powershell-helper:
+    image: mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019
+    deploy: 
+      # endpoint_mode: dnsrr
+      placement: 
+        constraints: [node.platform.os == windows, node.role == worker]
+  # volumes:
+  #   - /code/cdr_sbc:/home/sbc/upload
+    ports:
+      - "8900:80"
+      - "8943:443"
+    networks:
+      - dmz
+    command: powershell
+
+
+networks:
+  dmz:
+    external: true
+

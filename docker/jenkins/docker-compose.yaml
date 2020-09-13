@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+    jenkins: 
+      #https://github.com/jenkinsci/docker/blob/master/README.md
+      # image: jenkins/jenkins
+      image: harbor-01.newtech.com.ar/newcos-automation/newcos-jenkins:2.222.4
+      deploy: 
+        placement: 
+          constraints: 
+            - node.role == worker
+            - node.platform.os == linux
+        restart_policy:
+          condition: on-failure
+          delay: 5s
+          max_attempts: 3
+          window: 120s   
+      user: root
+      networks:
+        - dmz  
+        - ntsm_network_net 
+      ports:
+        - 8090:8080
+        - 50000:50000
+      volumes:
+        - /shared/newcos-cicd/:/var/jenkins_home
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /usr/bin/docker:/usr/bin/docker 
+      environment:
+        - JAVA_OPTS="-Dmail.smtp.starttls.enable=true"  
+networks:
+    dmz:
+    ntsm_network_net:
+volumes:
+    jenkins_data:

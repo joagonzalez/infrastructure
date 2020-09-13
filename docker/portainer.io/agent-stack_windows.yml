@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+  portainer_agent:
+    image: portainer/agent:windows1803-amd64
+    volumes:
+      - \\.\pipe\docker_engine:\\.\pipe\docker_engine
+    ports:
+      - target: 9001
+        published: 9001
+        protocol: tcp
+        mode: host
+    networks:
+      - newcos-portainer_agent_network # viene del stack newcos-portainer
+    environment:
+      - AGENT_CLUSTER_ADDR=tasks.agent portainer/agent   
+    deploy:
+      placement:
+        constraints: [node.platform.os == windows]
+
+networks:
+  portainer_agent:
+    external: true
+    # driver: overlay
+    # attachable: true

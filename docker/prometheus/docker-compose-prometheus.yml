@@ -1,0 +1,20 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    deploy: 
+      placement: 
+        constraints: 
+          - node.platform.os == linux
+          - node.role == worker
+          - node.hostname == newcos-worker-03
+    ports:
+     - 9090:9090
+    networks:
+      - dmz
+    volumes:
+      - /shared/newcos-teams/sandbox-04/config/prometheus.yml:/etc/prometheus/prometheus.yml
+networks:
+  dmz:
+    external: true
+

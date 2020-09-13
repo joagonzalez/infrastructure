@@ -1,0 +1,34 @@
+version: "3"
+services:
+  nginx:
+    container_name: newcos_nginx
+    restart: always
+    build: .
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/log/nginx/
+    networks:
+      - monitoring
+
+  telegraf:
+    image: telegraf
+    container_name: newcos_telegraf
+    restart: always
+   # environment:
+   #   HOST_PROC: /rootfs/proc
+   #   HOST_SYS: /rootfs/sys
+   #   HOST_ETC: /rootfs/etc
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+     # - /sys:/rootfs/sys:ro
+     # - /proc:/rootfs/proc:ro
+     # - /etc:/rootfs/etc:ro
+      - ./access.log:/var/log/access.log:ro
+    networks:
+      - monitoring
+  
+networks:
+  monitoring:
+

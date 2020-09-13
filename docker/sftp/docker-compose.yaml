@@ -1,0 +1,13 @@
+sftp:
+    image: atmoz/sftp
+    # cuuando se corre en swarm
+    # deploy: 
+    #   placement: 
+    #     constraints: 
+    #       - node.platform.os == linux
+    #       - node.role == worker
+    volumes:
+      - /code/cdr_sbc:/home/sbc/upload
+    ports:
+        - "2222:22"
+    command: sbc:sbc_cdr:1001

@@ -1,0 +1,160 @@
+version: '3'
+services:
+    redis:
+        image: 'redis:5.0.5'
+        # command: redis-server --requirepass redispass
+        deploy: 
+            placement: 
+              constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        networks:
+            - newcos-airflow-dev_default
+
+    postgres:
+        image: postgres:9.6
+        deploy: 
+            placement: 
+              constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        networks:
+            - newcos-airflow-dev_default
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+        # Uncomment these lines to persist data on the local filesystem.
+        #     - PGDATA=/var/lib/postgresql/data/pgdata
+        # volumes:
+            - /shared/newcos-automation/dev/airflow/pgdata:/var/lib/postgresql/data/pgdata
+
+    webserver:
+        #image: puckel/docker-airflow:1.10.9
+        image: harbor-01.newtech.com.ar/newcos-automation/newcos-airflow:1.10.9
+        restart: always
+        depends_on:
+            - postgres
+            - redis
+        deploy: 
+            placement: 
+                constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        environment:
+            - LOAD_EX=y
+            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - EXECUTOR=Celery
+            # - POSTGRES_USER=airflow
+            # - POSTGRES_PASSWORD=airflow
+            # - POSTGRES_DB=airflow
+            # - REDIS_PASSWORD=redispass
+        volumes:
+            - /shared/newcos-automation/dev/dags:/usr/local/airflow/dags
+            - /shared/newcos-automation/dev/playbooks:/usr/local/airflow/playbooks
+            - /shared/newcos-automation/dev/scripts:/usr/local/airflow/scripts
+            - /shared/newcos-automation/dev/airflow/config/requirements.txt:/requirements.txt
+            # Uncomment to include custom plugins
+            - /shared/newcos-automation/dev/logs:/usr/local/airflow/logs
+            - /shared/newcos-automation/dev/airflow/plugins:/usr/local/airflow/plugins
+            - /shared/newcos-automation/dev/airflow/config/airflow.cfg:/usr/local/airflow/airflow.cfg
+        ports:
+            - "8080:8080"
+        networks:
+            - dmz
+            - newcos-airflow-dev_default
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+
+    flower:
+        #image: puckel/docker-airflow:1.10.9
+        image: harbor-01.newtech.com.ar/newcos-automation/newcos-airflow:1.10.9
+        restart: always
+        depends_on:
+            - redis
+        deploy: 
+            placement: 
+                constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        environment:
+            - EXECUTOR=Celery
+            # - REDIS_PASSWORD=redispass
+        ports:
+            - "5555:5555"
+        networks:
+            - dmz
+            - newcos-airflow-dev_default
+        command: flower
+
+    scheduler:
+        #image: puckel/docker-airflow:1.10.9
+        image: harbor-01.newtech.com.ar/newcos-automation/newcos-airflow:1.10.9
+        restart: always
+        depends_on:
+            - webserver
+        volumes:
+            - /shared/newcos-automation/dev/dags:/usr/local/airflow/dags
+            - /shared/newcos-automation/dev/scripts:/usr/local/airflow/scripts
+            - /shared/newcos-automation/dev/playbooks:/usr/local/airflow/playbooks
+            - /shared/newcos-automation/dev/airflow/config/airflow.cfg:/usr/local/airflow/airflow.cfg
+            # - /shared/newcos-automation/dev/airflow/config/requirements.txt:/requirements.txt
+            - /shared/newcos-automation/dev/logs:/usr/local/airflow/logs
+            # Uncomment to include custom plugins
+            # - ./plugins:/usr/local/airflow/plugins
+        networks:
+            - newcos-airflow-dev_default
+        deploy: 
+            placement: 
+                constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        environment:
+            - LOAD_EX=y
+            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - EXECUTOR=Celery
+            # - POSTGRES_USER=airflow
+            # - POSTGRES_PASSWORD=airflow
+            # - POSTGRES_DB=airflow
+            # - REDIS_PASSWORD=redispass
+        command: scheduler
+
+    worker:
+        #image: puckel/docker-airflow:1.10.9
+        image: harbor-01.newtech.com.ar/newcos-automation/newcos-airflow:1.10.9
+        restart: always
+        depends_on:
+            - scheduler
+        volumes:
+            - /shared/newcos-automation/dev/dags:/usr/local/airflow/dags
+            - /shared/newcos-automation/dev/scripts:/usr/local/airflow/scripts
+            - /shared/newcos-automation/dev/playbooks:/usr/local/airflow/playbooks
+            - /shared/newcos-automation/dev/airflow/config/airflow.cfg:/usr/local/airflow/airflow.cfg
+            - /shared/newcos-automation/dev/airflow/config/requirements.txt:/requirements.txt
+            # Uncomment to include custom plugins
+            - /shared/newcos-automation/dev/logs:/usr/local/airflow/logs
+            - /shared/newcos-automation/dev/airflow/plugins:/usr/local/airflow/plugins
+        networks:
+            - newcos-airflow-dev_default
+        deploy: 
+            placement: 
+                constraints: 
+                - node.platform.os == linux
+                - node.role == worker
+        environment:
+            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - EXECUTOR=Celery
+            # - POSTGRES_USER=airflow
+            # - POSTGRES_PASSWORD=airflow
+            # - POSTGRES_DB=airflow
+            # - REDIS_PASSWORD=redispass
+        command: worker
+
+networks:
+    newcos-airflow-dev_default:
+    dmz:
+        external: true

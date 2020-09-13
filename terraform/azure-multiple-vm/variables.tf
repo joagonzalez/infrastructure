@@ -36,3 +36,18 @@ variable "sku" {
     eastus  = "18.04-LTS"
   }
 }
+
+# network variables
+variable "vnet_name" {
+     description = "vnet for cluster"
+     default     = "cluster_vnet"
+}
+variable "address_space" {
+     default     = ["10.0.0.0/16"]
+}
+variable "subnet_name" {
+     default     = "cluster_subnet"
+}
+variable "address_prefix" {
+      default     = "10.0.1.0/24"
+}
