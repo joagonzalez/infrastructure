@@ -15,6 +15,7 @@ Usecases will be explained later on this readme file.
 - [Ansible](#ansible)
 - [Terraform](#terraform)
     - [azure-vm](#azure-vm)
+    - [azure-multiple-vm](#azure-multiple-vm)
 - [Docker](#docker)
 - [Examples](#examples)
 - [References](#references)
@@ -36,6 +37,11 @@ Dir structure of repo
 ```
 
 ## Ansible
+Ansible playbooks for different functions
+
+- greenfield linux: dispatcher that enables different tasks for different function like banner config, apt repositories config, docker install, telegraf install, etc
+- ping_monitoring: Parsing icmp output with textFSM and writing that information to influxDB in order to monitor latency
+- sbc: Gather informartion and parsing data with textFSM to monitor session border controller through telent
 
 ## Terraform
 Basic commands
@@ -53,7 +59,21 @@ terraform plan -var "admin_password=Argentina_2020#" -var "admin_username=newcos
 terraform apply -var "admin_password=Argentina_2020#" -var "admin_username=newcos"
 terraform destroy -var "admin_password=Argentina_2020#" -var "admin_username=newcos"
 ```
+
+### azure-multiple-vm
+Deploy N vms in azure setting parameterz like number of instances to deploy, network, subnet, etc.
+
 ## Docker
+Dockerfile and docker-compose files for multiples services
+
+- Jenkins
+- Harbor docker registry
+- Apache airflow
+- NGINX + GeoIP
+- portainer.io
+- prometheus
+- sftp server
+- telemetry (influxdb + grafana)
 
 ## Examples
 
