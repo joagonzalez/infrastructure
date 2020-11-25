@@ -1,12 +1,13 @@
 ---
   - name: Ping hosts
-    hosts: managers, workers
+    hosts: santander
     connection: local
     gather_facts: no
   
     vars:
-      - influxdb_ip: "newcos-dev-sandbox.smq.net"
-      - influxdb_database_name: "newcos_telemetry"
+      - influxdb_ip: "localhost"
+      - influxdb_database_name: "santander"
+      - influxdb_port: 8086
   
     tasks:
   
@@ -33,11 +34,13 @@
         influxdb_write:
           hostname: "{{influxdb_ip}}"
           database_name: "{{influxdb_database_name}}"
+          port: "{{influxdb_port}}"
+          udp_port: "{{influxdb_port}}"
           data_points:
             - measurement: network
               tags:
                 host: "{{ping_host}}"
-              #time: "{{ ansible_date_time.iso8601 }}"
+              # time: "{{ ansible_date_time.iso8601 }}"
               fields:
                 PACKET_TX: "{{influx_data[0].PACKET_TX}}"
                 PACKET_RX: "{{influx_data[0].PACKET_RX}}"

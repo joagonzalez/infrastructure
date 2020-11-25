@@ -1,3 +1,7 @@
+[santander]
+google.com.ar ping_host=google.com.ar
+santander.com.ar ping_host=santander.com
+
 [managers]
 newcos-manager-01.smq.net ping_host=newcos-manager-01.smq.net
 newcos-manager-02.smq.net ping_host=newcos-manager-02.smq.net
