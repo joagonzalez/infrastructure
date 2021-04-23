@@ -1,0 +1,54 @@
+- name: Install any necessary dependencies [Debian/Ubuntu]
+  apt: 
+    name: "{{ item }}" 
+    state: present 
+    update_cache: yes 
+    cache_valid_time: 3600
+  with_items:
+    - python-httplib2
+    - python-apt
+    - curl
+  become: yes
+
+- name: Import InfluxData GPG signing key [Debian/Ubuntu]
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+  become: yes
+
+- name: Add InfluxData repository [Debian/Ubuntu]
+  apt_repository:
+    repo: deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+    state: present
+  become: yes
+
+- name: Install Telegraf packages [Debian/Ubuntu]
+  apt: 
+    name: telegraf
+    state: latest
+  become: yes
+
+- name: --- delete current telegraf configuration
+  shell: |
+    mv /etc/telegraf/telegraf.conf /etc/telegraf/telegraf.conf_old
+  become: yes
+  
+- name: copy telegraf config file to remote hosts
+  copy:
+    src: telegraf.conf
+    dest: "/etc/telegraf/"
+    owner: newcos
+    group: newcos
+    mode: '0774'
+    force: no
+  become: yes
+
+- name: docker group to telegraf user
+  shell: "usermod -aG docker telegraf"
+  become: yes
+
+- name: Restart service telegraf, in all cases
+  service:
+    name: telegraf
+    state: restarted
+  become: yes

@@ -1,0 +1,69 @@
+version: '3'
+services:
+
+  devart-web:
+    image: devart-web
+    ports:
+      - 9090:9090
+    depends_on:
+      - devart-postgres
+      - devart-backend
+    networks:
+      - qwerty_net
+      - dmz_ssl
+    environment:
+      - VIRTUAL_HOST=devartdesign.com
+      - VIRTUAL_PORT=9090
+      - LETSENCRYPT_HOST=devartdesign.com
+      - LETSENCRYPT_EMAIL=ramirog89@gmail.com
+
+  devart-admin:
+    image: devart-admin
+    ports:
+      - 9091:9091
+    depends_on:
+      - devart-postgres
+      - devart-backend
+    networks:
+      - qwerty_net
+      - dmz_ssl
+    environment:
+      - VIRTUAL_HOST=admin.devartdesign.com
+      - VIRTUAL_PORT=9091
+      - LETSENCRYPT_HOST=admin.devartdesign.com
+      - LETSENCRYPT_EMAIL=ramirog89@gmail.com
+
+  devart-backend:
+    image: devart-backend
+    #ports:
+    #  - 3030:3030
+    depends_on:
+      - devart-postgres
+    networks:
+      - qwerty_net
+      - dmz_ssl
+    environment:
+      - VIRTUAL_HOST=api.devartdesign.com
+      - VIRTUAL_PORT=3030
+      - LETSENCRYPT_HOST=api.devartdesign.com
+      - LETSENCRYPT_EMAIL=ramirog89@gmail.com
+
+  devart-postgres:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ramiro
+    ports:
+      - 5432:5432
+    networks:
+      - qwerty_net
+    volumes:
+      - /home/rgonzalez/docker/volumes/postgres:/var/lib/postgresql/data
+
+networks:
+  qwerty_net:
+    external: true
+  dmz_ssl:
+    external: true
+
+

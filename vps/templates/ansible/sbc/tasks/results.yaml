@@ -1,0 +1,24 @@
+    # show results
+    - name: --- parsed uptime ---
+      debug:
+        msg: "data parseada: {{uptime}}"
+
+    - name: --- parsed cpu utilization ---
+      debug:
+        msg: "data parseada: {{cpu_percentage}}"
+
+    - name: --- parsed version ---
+      debug:
+        msg: "data parseada: {{version}}"
+
+    - name: --- parsed proxy-set-status ---
+      debug:
+        msg: "data parseada: {{proxy_set}}"
+
+    - name: --- parsed alarms ---
+      debug:
+        msg: "data parseada: {{alarms}}"
+
+    - name: --- parsed active-calls ---
+      debug:
+        msg: "data parseada: {{active_calls}}"

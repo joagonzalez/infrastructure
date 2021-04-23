@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+    jenkins: 
+      image: jenkins/jenkins
+      deploy: 
+        placement: 
+          constraints: 
+            - node.platform.os == linux
+        restart_policy:
+          condition: on-failure
+          delay: 5s
+          max_attempts: 3
+          window: 120s   
+      user: root
+      networks:
+        - dmz_ssl 
+        - qwerty_net 
+      ports:
+        - 8090:8080
+        - 50000:50000
+      volumes:
+        - jenkins-volume:/var/jenkins_home
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /usr/bin/docker:/usr/bin/docker 
+        - /code/vps:/infrastructure 
+      environment:
+        - VIRTUAL_HOST=jenkins.qwerty.com.ar
+        - VIRTUAL_PORT=8080
+        - LETSENCRYPT_HOST=jenkins.qwerty.com.ar
+        - LETSENCRYPT_EMAIL=joagonzalez@gmail.com
+networks:
+    dmz_ssl:
+      external: true
+    qwerty_net:
+volumes:
+    jenkins-volume:
+      external: true

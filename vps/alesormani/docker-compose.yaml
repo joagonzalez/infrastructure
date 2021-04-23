@@ -1,0 +1,19 @@
+version: '3'
+services:
+  alesormani:
+    image: alesormani-react
+    networks:
+      - dmz
+    expose:
+      - '80'
+    environment:
+      - VIRTUAL_HOST=alesormani.com
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=alesormani.com
+      - LETSENCRYPT_EMAIL=joagonzalez@gmail.com
+
+networks:
+  dmz:
+    external: true
+
+

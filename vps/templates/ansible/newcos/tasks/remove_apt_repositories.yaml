@@ -1,0 +1,50 @@
+      # Remove specified repository from sources list.
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic main restricted
+          state: absent
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-updates main restricted
+          state: absent  
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic universe
+          state: absent  
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic multiverse
+          state: absent 
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-updates multiverse
+          state: absent 
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-updates universe
+          state: absent 
+        become: yes
+  
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse
+          state: absent 
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-security main restricted
+          state: absent 
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-security universe
+          state: absent 
+        become: yes
+
+      - apt_repository:
+          repo: deb http://ar.archive.ubuntu.com/ubuntu bionic-security multiverse
+          state: absent 
+        become: yes

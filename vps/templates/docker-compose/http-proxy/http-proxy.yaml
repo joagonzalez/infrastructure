@@ -1,0 +1,26 @@
+version: "3"
+services:
+  http-proxy:
+    #image: harbor-01.newtech.com.ar/newcos-teams/master-http-proxy:0.0.1
+    image: newcos/master-http-proxy:0.0.1
+    deploy: 
+      placement: 
+        constraints: 
+          - node.platform.os == linux
+          - node.role == worker
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /shared/master-http-proxy/default.conf:/etc/nginx/conf.d/default.conf
+      - /shared/master-http-proxy/nginx.conf:/etc/nginx/nginx.conf
+      - /shared/master-http-proxy/nginx_status.conf:/etc/nginx/conf.d/nginx_status.conf:ro \
+      - /shared/master-http-proxy/certs/newcos.crt:/etc/ssl/newcos.crt
+      - /shared/master-http-proxy/certs/newcos.rsa:/etc/ssl/newcos.rsa
+      - /shared/newcos-teams/dev/public:/etc/nginx/dev/public
+    networks:
+      - dmz  
+    # command: [nginx-debug, '-g', 'daemon off;']
+networks:
+  dmz:
+    external: true

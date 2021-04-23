@@ -1,0 +1,62 @@
+version: "3"
+services:
+  grafana:
+    image: grafana/grafana:latest-ubuntu
+    # cuando se corre en swarm
+    # deploy: 
+    #   placement: 
+    #     constraints: 
+    #       - node.platform.os == linux
+    #       - node.role == worker
+    restart: always
+    ports:
+      - 3002:3000
+    networks:
+      - monitoring
+      - dmz
+    volumes:
+      - grafana-volume:/var/lib/grafana  
+      # - ./defaults.ini:/usr/share/grafana/conf/defaults.ini
+
+  influxdb:
+    image: influxdb
+    # cuando se corre en swarm
+    # deploy: 
+    #   placement: 
+    #     constraints: 
+    #       - node.platform.os == linux
+    #       - node.role == worker
+    restart: always
+    ports:
+      - 8086:8086
+    networks:
+      - monitoring
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+    environment: # avoid error when reach X number of registries with one tag
+      - INFLUXDB_DATA_MAX_VALUES_PER_TAG=0  
+      - INFLUXDB_DATA_MAX_SERIES_PER_DATABASE=1500000
+  # http-proxy:
+  #   container_name: http-proxy
+  #   image: nginx:latest
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./default.conf:/etc/nginx/conf.d/default.conf
+  #     # - ./certs/newcos.crt:/etc/ssl/newcos.crt
+  #     # - ./certs/newcos.rsa:/etc/ssl/newcos.rsa
+  #   depends_on:
+  #     - grafana
+  #     - influxdb
+  #   networks:
+  #     - dmz  
+
+networks:
+  monitoring:
+  dmz:
+      
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true

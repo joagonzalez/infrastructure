@@ -1,0 +1,27 @@
+- name: --- add repository
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+  become: yes
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install a list of packages
+  apt:
+    pkg:
+    - nodejs
+  become: yes
+
+- name: --- check version
+  shell: |
+      node --version
+  register: install
+  become: yes
+
+- debug:
+    msg: "{{install.stdout}}"
+
+
+  

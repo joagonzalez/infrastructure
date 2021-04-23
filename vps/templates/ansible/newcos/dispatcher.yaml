@@ -1,0 +1,58 @@
+---
+  - hosts: sandbox #cluster-azure #sandbox, nfs, managers, workers, redlink
+    gather_facts: yes
+    tasks:
+      
+      - name: set path variable
+        set_fact: 
+          path_files: /code
+        delegate_to: localhost
+
+      - name: create /code folder on remote hosts
+        file:
+          path: "{{path_files}}"
+          state: directory
+          owner: newcos
+          group: newcos
+          recurse: yes
+          mode: 0775
+        become: yes
+      
+      ### UNCOMMENT SOFTWARE TO DEPLOY ###
+
+      # # Add and remove apt repositories
+      # - name: Remove apt repositories from Argentina
+      #   import_tasks: tasks/remove_apt_repositories.yaml
+      #   ignore_errors: yes
+
+      # - name: Add apt repositories from USA
+      #   import_tasks: tasks/add_apt_repositories.yaml
+      #   ignore_errors: yes
+
+      # # EDIT /etc/hosts files within hosts
+      # - name: Edit hosts files to get full-mesh without dns server
+      #   import_tasks: tasks/edit_hosts_file.yaml
+
+      # # DOCKER INSTALLER
+      # - name: Install Docker to remote host
+      #   import_tasks: tasks/install_docker.yaml
+
+      # # TELEGRAF INSTALLER
+      # - name: Install Telegraf client and configuration for grafana reports
+      #   import_tasks: tasks/install_telegraf.yaml
+
+      # # NFS INSTALLER
+      # - name: Install NFS client/server to remote host
+      #   import_tasks: tasks/install_nfs.yaml
+
+      # # GENERIC APPS
+      # - name: Install generic application to remote host
+      #   import_tasks: tasks/install_generic.yaml
+
+      # # CONFIGURE SSH SERVICE
+      # - name: Configure SSH service to remote host
+      #   import_tasks: tasks/banner-ssh.yaml
+
+      # INSTALL NODE v12
+      - name: Install Node v12 to remote host
+        import_tasks: tasks/node.yaml

@@ -1,0 +1,52 @@
+---
+  - name: Ping hosts
+    hosts: managers, workers
+    connection: local
+    gather_facts: no
+  
+    vars:
+      - influxdb_ip: "newcos-dev-sandbox.smq.net"
+      - influxdb_database_name: "newcos_telemetry"
+  
+    tasks:
+  
+      - name: ping
+        shell: ping -c 6 -w 6 {{ping_host}}
+        ignore_errors: true
+        register: output
+        delegate_to: localhost
+  
+      - debug:
+          msg: "{{output.stdout}}"
+        delegate_to: localhost
+  
+      - name: --- Save influxdb data
+        set_fact:
+          influx_data: "{{output.stdout | parse_cli_textfsm('ping_parser.template')}}"
+        delegate_to: localhost
+  
+      - debug:
+          msg: "{{influx_data}}"   
+        delegate_to: localhost     
+  
+      - name: --- Write points into database
+        influxdb_write:
+          hostname: "{{influxdb_ip}}"
+          database_name: "{{influxdb_database_name}}"
+          data_points:
+            - measurement: network
+              tags:
+                host: "{{ping_host}}"
+              #time: "{{ ansible_date_time.iso8601 }}"
+              fields:
+                PACKET_TX: "{{influx_data[0].PACKET_TX}}"
+                PACKET_RX: "{{influx_data[0].PACKET_RX}}"
+                PACKET_LOSS: "{{influx_data[0].PACKET_LOSS}}"
+                RTT_MIN: "{{influx_data[0].RTT_MIN}}"
+                RTT_AVG: "{{influx_data[0].RTT_AVG}}"
+                RTT_MAX: "{{influx_data[0].RTT_MAX}}"
+                RTT_MDEV: "{{influx_data[0].RTT_MDEV}}"
+        delegate_to: localhost  
+        
+  
+  

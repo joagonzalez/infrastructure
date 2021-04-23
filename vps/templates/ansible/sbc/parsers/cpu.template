@@ -1,0 +1,4 @@
+Value cpu_percentage (\d+)
+
+Start
+  ^.*Voice CPU utilization ${cpu_percentage}.* -> Record

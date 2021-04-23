@@ -1,0 +1,30 @@
+- name: copy banner config to remote hosts
+  copy:
+    src: newcos-banner.conf
+    dest: "/code/"
+    owner: newcos
+    group: newcos
+    mode: '0774'
+    force: no
+  become: yes
+
+- name: --- delete current sshd_config file
+  shell: |
+    mv /etc/ssh/sshd_config /etc/ssh/sshd_config_old
+  become: yes
+  
+- name: copy sshd_config file to remote hosts
+  copy:
+    src: sshd_config
+    dest: "/etc/ssh/sshd_config"
+    owner: newcos
+    group: newcos
+    mode: '0774'
+    force: no
+  become: yes
+
+- name: Restart service sshd
+  service:
+    name: sshd
+    state: restarted
+  become: yes

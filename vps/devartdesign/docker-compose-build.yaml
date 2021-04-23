@@ -1,0 +1,21 @@
+version: '3'
+services:
+
+  devart-web:
+    image: devart-web
+    build:
+      context: ./
+      dockerfile: devart-web/Dockerfile
+
+  devart-admin:
+    image: devart-admin
+    build:
+      context: ./
+      dockerfile: devart-admin/Dockerfile
+
+  devart-backend:
+    image: devart-backend
+    build:
+      context: ./
+      dockerfile: devart-backend/Dockerfile
+

@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  jgonzalez:
+    image: jgonzalez-apache:1.0.0
+    networks:
+      - dmz_ssl
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    environment:
+      - VIRTUAL_HOST=jgonzalez.com.ar
+      - LETSENCRYPT_HOST=jgonzalez.com.ar
+      - LETSENCRYPT_EMAIL=joagonzalez@gmail.com
+
+networks:
+  dmz_ssl:
+    external: true
+
+

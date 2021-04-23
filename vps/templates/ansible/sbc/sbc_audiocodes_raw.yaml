@@ -1,0 +1,14 @@
+---
+- name: Get info from SBC AudioCodes
+  hosts: sbc
+  gather_facts: no
+  
+  tasks:
+    - name: Return run conf of sbc
+      raw: show running-config
+      register: output
+      ignore_errors: yes
+      
+    - debug:
+        msg: "{{output}}"
+      when: output is defined

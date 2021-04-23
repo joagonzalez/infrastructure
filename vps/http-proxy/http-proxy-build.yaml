@@ -1,0 +1,10 @@
+version: "3"
+services:
+ http-proxy:
+   #image: harbor-01.newtech.com.ar/newcos-teams/master-http-proxy:0.0.1
+   image: newcos/master-http-proxy:0.0.1
+   build:
+     context: ./
+     dockerfile: Dockerfile
+
+

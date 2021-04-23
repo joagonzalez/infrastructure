@@ -1,0 +1,28 @@
+[sbc]
+192.168.0.20 ansible_host=192.168.0.20
+13.66.159.172 ansible_host=13.66.159.172
+
+[cisco]
+192.168.10.6 ansible_host=192.168.10.6
+
+[cisco:vars]
+ansible_network_os = ios
+ansible_port=23
+ansible_ssh_pass=Argentina2020#
+ansible_ssh_user=sbcadmin
+ansible_password=newcosnet
+ansible_hostname = R2
+
+
+[sbc:vars]
+ansible_network_os = audiocodes
+ansible_port=23
+ansible_ssh_pass=Argentina2020#
+ansible_ssh_user=sbcadmin
+ansible_password=Argentina2020#
+ansible_hostname = sbc_martinez
+influxdb_ip = newcos-dev-sandbox.smq.net
+influxdb_database_name = newcos_telemetry
+influxdb_measurement = sbc
+local_git_repo_path = /home/jgonzalez/dev/newcos-network-backups
+

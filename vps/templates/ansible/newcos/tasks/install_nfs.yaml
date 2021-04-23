@@ -1,0 +1,14 @@
+# NFS CLIENT/SERVER INSTALL
+- name: Install nfs client requirements
+  apt:
+    name: nfs-common
+    state: present
+  become: yes
+
+
+# - name: Install nfs server requirements
+#   apt:
+#     name: nfs-kernel-server
+#     state: present
+#   become: yes
+#   when: "'newcos-nfs-01' in ansible_hostname"
