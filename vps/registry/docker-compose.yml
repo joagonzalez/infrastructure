@@ -7,6 +7,8 @@ services:
     restart: always
     expose:
       - "5000"
+    networks:
+      - registry_net
     environment:
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
       REGISTRY_HTTP_HOST: docker.peladonerd.com
@@ -25,7 +27,7 @@ services:
       # REGISTRY_HEALTH_STORAGEDRIVER_ENABLED: false
     volumes:
       - ./auth:/auth
-      - ./docker_registry:/var/lib/registry
+      - /docker_registry:/var/lib/registry
       - ./certs:/certs
 
   # We are using these 2 containers because automatic TLS certs from docker registry don't work
@@ -37,10 +39,12 @@ services:
     image: jc21/registry-ui
     expose:
       - "80"
+    networks:
+      - registry_net
     environment:
-      REGISTRY_HOST: docker.peladonerd.com:5000
+      REGISTRY_HOST: registry:5000
       REGISTRY_SSL: "true"
-      REGISTRY_DOMAIN: docker.peladonerd.com
+      REGISTRY_DOMAIN: registry.qwerty.com.ar
       # Tienes que crear este usuario para que ui se pueda conectar al registry con auth
       # You gotta create this user for the ui to connect to the registry using auth
       REGISTRY_USER: docker
@@ -56,27 +60,24 @@ services:
       - "80"
     networks:
       - dmz_ssl
+      - registry_net
     environment:
-      VIRTUAL_HOST: registry.qwerty.com.ar
-      VIRTUAL_PORT: 80
-      LETSENCRYPT_HOST: registry.qwerty.com.ar
-      LETSENCRYPT_EMAIL: joagonzalez@gmail.com
+      - VIRTUAL_HOST=registry.qwerty.com.ar
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=registry.qwerty.com.ar
+      - LETSENCRYPT_EMAIL=joagonzalez@gmail.com
     volumes:
       - ./proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
     depends_on:
       - ui
       - registry
-      - nginx-proxy
+      #- nginx-proxy
     links:
       - ui
       - registry
     restart: always
 
-volumes:
-  certs:
-    external: 
-      name: master-ssl-proxy_certs
-
 networks: 
   dmz_ssl:
     external: true
+  registry_net:
