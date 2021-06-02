@@ -54,6 +54,8 @@ services:
     image: nginx
     expose:
       - "80"
+    networks:
+      - dmz_ssl
     environment:
       VIRTUAL_HOST: registry.qwerty.com.ar
       VIRTUAL_PORT: 80
@@ -74,3 +76,7 @@ volumes:
   certs:
     external: 
       name: master-ssl-proxy_certs
+
+networks: 
+  dmz_ssl:
+    external: true
