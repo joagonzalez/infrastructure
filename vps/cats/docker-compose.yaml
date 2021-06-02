@@ -1,0 +1,22 @@
+version: '3'
+services:
+
+  cats:
+    image: joagonzalez/cats-app:1.0.0
+    networks:
+      - dmz_ssl
+    # volumes:
+    #  - ./public_html:/usr/local/apache2/htdocs
+    ports:
+      - 5001:5000
+    environment:
+      - VIRTUAL_HOST=cats.qwerty.com.ar
+      - VIRTUAL_PORT=5000
+      - LETSENCRYPT_HOST=cats.qwerty.com.ar
+      - LETSENCRYPT_EMAIL=joagonzalez@gmail.com
+
+networks:
+  dmz_ssl:
+    external: true
+
+
