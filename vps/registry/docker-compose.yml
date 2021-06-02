@@ -34,7 +34,6 @@ services:
   # Estamos usando estos 2 contenedores porque los certs automaticos con docker registry no funcionan
   # https://github.com/docker/distribution/issues/2545
 
-
   ui:
     image: jc21/registry-ui
     expose:
@@ -54,10 +53,9 @@ services:
     links:
       - registry:docker.peladonerd.com
 
+
   proxy:
     image: nginx
-    expose:
-      - "80"
     networks:
       - dmz_ssl
       - registry_net
